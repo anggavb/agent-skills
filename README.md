@@ -7,6 +7,7 @@ Project ini merupakan backup kumpulan skills dan konfigurasi AI agent dari PC pr
 | Lokasi | Keterangan |
 | --- | --- |
 | [`skills/`](skills/) | Kumpulan skills pribadi beserta referensi, template, contoh, dan script pendukung. |
+| [`skills/agent-workspace/`](skills/agent-workspace/) | Skill workspace untuk Velda, mengatur folder kerja tiap profil Hermes. |
 | [`.codex/AGENTS.md`](.codex/AGENTS.md) | Instruksi workflow Go untuk Codex, termasuk kapan perlu berkonsultasi dengan subagent. |
 | [`.codex/agents/go-skills-advisor.toml`](.codex/agents/go-skills-advisor.toml) | Konfigurasi subagent `go_skills_advisor` sebagai penasihat engineering Go dengan instruksi dan sandbox `read-only`. |
 
