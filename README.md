@@ -6,12 +6,82 @@ Project ini merupakan backup kumpulan skills dan konfigurasi AI agent dari PC pr
 
 | Lokasi | Keterangan |
 | --- | --- |
-| [`skills/`](skills/) | Kumpulan skills pribadi beserta referensi, template, contoh, dan script pendukung. |
-| [`skills/agent-workspace/`](skills/agent-workspace/) | Skill workspace untuk Velda, mengatur folder kerja tiap profil Hermes. |
+| [`agent-workspace/`](agent-workspace/) | Skill workspace untuk Velda, mengatur folder kerja tiap profil Hermes. |
+| [`trading-daily/`](trading-daily/) | Skill riset dan penyusunan morning brief pasar saham Indonesia (IDX), beserta referensi, template, contoh, dan script validasi. |
 | [`.codex/AGENTS.md`](.codex/AGENTS.md) | Instruksi workflow Go untuk Codex, termasuk kapan perlu berkonsultasi dengan subagent. |
 | [`.codex/agents/go-skills-advisor.toml`](.codex/agents/go-skills-advisor.toml) | Konfigurasi subagent `go_skills_advisor` sebagai penasihat engineering Go dengan instruksi dan sandbox `read-only`. |
 
-## Setup Codex
+## Struktur Skills
+
+```text
+personal-skills/
+├── .codex/
+│   ├── AGENTS.md
+│   └── agents/
+│       └── go-skills-advisor.toml
+├── agent-workspace/
+│   └── SKILL.md
+├── trading-daily/
+│   ├── SKILL.md
+│   ├── examples/
+│   ├── references/
+│   ├── scripts/
+│   └── templates/
+└── README.md
+```
+
+## Instalasi Skills di Project atau Workspace Lokal
+
+Untuk Codex, salin skill yang ingin digunakan ke `<project>/.agents/skills/<nama-skill>/`. Jika workspace berisi beberapa repository Git terpisah, pasang skill di masing-masing repository yang membutuhkannya. Pada monorepo, skill di `.agents/skills/` root tersedia saat Codex dijalankan dari subfolder repository tersebut. Lihat [dokumentasi lokasi skills Codex](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills).
+
+Folder skill di root `personal-skills` merupakan sumber backup. Saat dipasang di project tujuan, salin seluruh folder skill beserta resource pendukungnya ke `.agents/skills/`.
+
+### Windows (PowerShell)
+
+Contoh berikut menggunakan checkout repository ini di `D:\personal-skills`. Sesuaikan lokasi sumber, project tujuan, dan nama skill:
+
+```powershell
+$skillsSource = 'D:\personal-skills'
+$projectPath = 'D:\workspace\my-project'
+$skillName = 'trading-daily'
+$skillsDestination = Join-Path $projectPath '.agents\skills'
+
+New-Item -ItemType Directory -Path $skillsDestination -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $skillsSource $skillName) -Destination $skillsDestination -Recurse
+```
+
+### Linux / macOS (Bash)
+
+```bash
+skills_source="$HOME/personal-skills"
+project_path="$HOME/workspace/my-project"
+skill_name="trading-daily"
+
+mkdir -p "$project_path/.agents/skills"
+cp -R "$skills_source/$skill_name" "$project_path/.agents/skills/"
+```
+
+Contoh di atas ditujukan untuk pemasangan pertama. Jika folder skill tujuan sudah ada, bandingkan isinya terlebih dahulu sebelum memperbarui salinannya. Perubahan pada sumber backup perlu disalin kembali ke project agar versi lokal ikut diperbarui.
+
+Hasil instalasi:
+
+```text
+my-project/
+└── .agents/
+    └── skills/
+        └── trading-daily/
+            ├── SKILL.md
+            ├── examples/
+            ├── references/
+            ├── scripts/
+            └── templates/
+```
+
+Jalankan Codex dari project tujuan, lalu gunakan `/skills` untuk memeriksa skill yang tersedia. Codex mendeteksi perubahan skill secara otomatis; jika belum muncul, mulai ulang Codex. Skill juga dapat dipanggil secara eksplisit, misalnya `$trading-daily`.
+
+Periksa kebutuhan runtime setiap skill sebelum digunakan. Sebagai contoh, `agent-workspace` memuat instruksi khusus profil Hermes dan lokasi workspace Linux; pemasangan folder ke Codex saja belum menyediakan runtime Hermes.
+
+## Setup Codex Global
 
 ### 1. Terapkan Konfigurasi Global
 
